@@ -8,6 +8,7 @@ abstract class Routes {
   static const DETAIL_ORDER = _Paths.DETAIL_ORDER;
   static const INVOICE = _Paths.INVOICE;
   static const STATUS_PENGIRIMAN = _Paths.STATUS_PENGIRIMAN;
+  static const CHECKOUT = _Paths.CHECKOUT;
 }
 
 abstract class _Paths {
@@ -17,4 +18,5 @@ abstract class _Paths {
   static const DETAIL_ORDER = '/detail-order';
   static const INVOICE = '/invoice';
   static const STATUS_PENGIRIMAN = '/status-pengiriman';
+  static const CHECKOUT = '/checkout';
 }

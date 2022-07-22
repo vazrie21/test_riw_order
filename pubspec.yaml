@@ -20,6 +20,17 @@ dependencies:
   flutter_downloader: ^1.8.0+1
   permission_handler: ^10.0.0
   jiffy: ^5.0.0
+  im_stepper: ^1.0.1+1
+  timelines: ^0.1.0
+  timeline_tile: ^2.0.0
+  device_info_plus: ^4.0.0
+  platform_device_id: ^1.0.1
+  # imei_plugin: ^1.2.0
+  android_multiple_identifier: ^1.0.3
+  flutter_timeline: ^0.3.0
+  progress_timeline: ^0.0.5
+  font_awesome_flutter: ^10.1.0
+  dio: ^4.0.6
 
 dev_dependencies: 
   flutter_lints: 2.0.1
@@ -28,4 +39,5 @@ dev_dependencies:
 
 flutter: 
   uses-material-design: true
-
+  assets:
+  - assets/img/

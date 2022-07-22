@@ -529,36 +529,46 @@ class DetailOrderView extends GetView<DetailOrderController> {
                     ),
                   ),
                   //poin
-                  Container(
-                    height: 25,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text('Poin'),
-                        ),
-                        Container(
-                          child: Text(CurrencyFormat.convertToIdr(
-                              int.parse(orderD['order_cc_discount'] ?? "0"),
-                              0)),
+                  orderD['order_cc_discount'] != '0'
+                      ? Container(
+                          height: 25,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text('Poin'),
+                              ),
+                              Container(
+                                child: Text(CurrencyFormat.convertToIdr(
+                                    int.parse(
+                                        orderD['order_cc_discount'] ?? "0"),
+                                    0)),
+                              )
+                            ],
+                          ),
                         )
-                      ],
-                    ),
-                  ),
+                      : SizedBox(
+                          height: 0,
+                        ),
                   //promo
-                  Container(
-                    height: 25,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text('Diskon'),
-                        ),
-                        Container(
-                          child: Text(CurrencyFormat.convertToIdr(
-                              int.parse(orderD['order_discount'] ?? "0"), 0)),
+                  orderD['order_discount'] != "0"
+                      ? Container(
+                          height: 25,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text('Diskon'),
+                              ),
+                              Container(
+                                child: Text(CurrencyFormat.convertToIdr(
+                                    int.parse(orderD['order_discount'] ?? "0"),
+                                    0)),
+                              )
+                            ],
+                          ),
                         )
-                      ],
-                    ),
-                  ),
+                      : SizedBox(
+                          height: 0,
+                        ),
                   // garis bawah
                   Container(
                     height: 10,

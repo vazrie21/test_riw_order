@@ -43,7 +43,7 @@ class DetailOrderController extends GetxController {
         Jiffy("${orderD['delivery_date']} ${orderD['delivery_time']}")
             .format("dd MMM yyyy, HH:mm");
     res['status'] == "success" ? Sloading.value = true : Sloading.value = false;
-    print(res['status']);
+    print(orderD);
   }
 
   @override
