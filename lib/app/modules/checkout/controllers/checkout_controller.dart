@@ -76,6 +76,29 @@ class CheckoutController extends GetxController {
     }
   ];
 
+  var isDelivery = true.obs;
+
+  var lat = "-6.3398059".obs;
+  var lng = "106.6862787".obs;
+  var allOutlet = [].obs;
+  var outletTerdekat = [].obs;
+  var allArea = [].obs;
+
+  var daftarBank = [].obs;
+  var outletTerpilih = {}.obs;
+  var alamatTerpilih = {}.obs;
+  var metodeBayar = {}.obs;
+
+  Future<void> getAlloutlet() async {
+    var res = await dio.post(
+        'https://dapurcokelat.com/api/firebase/getalllocation',
+        data: {'token': 'xx', 'lat': '$lat', 'lng': '$lng'});
+    print(res.data);
+    outletTerdekat.value = res.data['terdekat'];
+    allOutlet.value = res.data['data'];
+    allArea.value = res.data['area'];
+  }
+
   Future<void> getAdr() async {
     var res1 = await dio.get(
         'https://dapurcokelat.com/api/order/addressList?token=xx&custid=11');
@@ -87,7 +110,7 @@ class CheckoutController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    // print(cartA);
+    getAlloutlet();
     getAdr();
   }
 }

@@ -9,8 +9,11 @@ import 'package:jiffy/jiffy.dart';
 // import 'package:intl/intl.dart';
 
 import 'package:get/get.dart';
+import 'package:test_riw_order/app/modules/checkout/views/checkout_view.dart';
 import 'package:test_riw_order/app/routes/app_pages.dart';
 import '../controllers/detail_order_controller.dart';
+
+final cokelat = Colors.brown.shade700;
 
 class DetailOrderView extends GetView<DetailOrderController> {
   const DetailOrderView({Key? key}) : super(key: key);
@@ -57,6 +60,283 @@ class DetailOrderView extends GetView<DetailOrderController> {
 
   Widget kepala(BuildContext context) {
     var orderD = controller.orderD;
+    final tinggiLayar = MediaQuery.of(context).size.height;
+    final lebar = MediaQuery.of(context).size.width;
+    final tinggi = tinggiLayar;
+    final cokelat = Colors.brown.shade700;
+
+    var dataDelivery = {}.obs;
+    dataDelivery = controller.dataReq;
+
+    var indexnya = 0.obs;
+    // indexnya = controller.indexStatus;
+    indexnya.value = 4;
+
+    Widget data3(int indexnya) {
+      var gambar;
+      var judul;
+      var subtitle;
+      var waktu;
+      if (indexnya == 0) {
+        gambar = Icon(Icons.payment);
+        judul = Text("ORDER DIBATALKAN");
+        subtitle = SizedBox(height: 0);
+        waktu = SizedBox(height: 0);
+      } else if (indexnya == 1) {
+        gambar = Icon(Icons.payment);
+        judul = Text("MENUNGGU PEMBAYARAN");
+        subtitle = SizedBox(height: 0);
+        waktu = SizedBox(height: 0);
+      } else if (indexnya == 2) {
+        gambar = Icon(Icons.store);
+        judul = Text("PESANAN SUDAH DITERIMA");
+        subtitle = Text("Akan diperoses di Outlet Terpilih");
+        waktu = SizedBox(height: 0);
+      } else if (indexnya == 3) {
+        gambar = Icon(Icons.delivery_dining_outlined);
+        judul = Text("MENUNGGU PROSES PICK-UP");
+        subtitle = Container(
+          padding: EdgeInsets.symmetric(vertical: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              dataDelivery.isNotEmpty
+                  ? Text(
+                      "Driver : ${dataDelivery['driver']['name'].toString()} ")
+                  : Text(''),
+              Icon(Icons.delivery_dining_outlined, size: 15, color: cokelat),
+            ],
+          ),
+        );
+        waktu = Container(
+          padding: EdgeInsets.symmetric(vertical: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              dataDelivery.isNotEmpty
+                  ? Text(
+                      "Perkiraan waktu pick-up : ${dataDelivery['timeline']['pickup']} ")
+                  : Text(''),
+              Icon(Icons.access_time_rounded, size: 15, color: cokelat),
+            ],
+          ),
+        );
+      } else {
+        gambar = Image.asset('assets/img/ceklis.png');
+        judul = Text("PESANANMU SUDAH SAMPAI");
+        subtitle = Container(
+          padding: EdgeInsets.symmetric(vertical: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              dataDelivery.isNotEmpty
+                  ? Text(
+                      "Diterima oleh : ${dataDelivery['recipient']['firstName'].toString()} ")
+                  : Text(''),
+              // Icon(Icons.phone_iphone, size: 15, color: cokelat),
+            ],
+          ),
+        );
+        waktu = Container(
+          padding: EdgeInsets.symmetric(vertical: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              dataDelivery.isNotEmpty
+                  ? Text("Pada : ${dataDelivery['timeline']['completed']} ")
+                  : Text(''),
+              Icon(Icons.access_time_rounded, size: 15, color: cokelat),
+            ],
+          ),
+        );
+      }
+
+      // return Obx(() {
+      return Container(
+        padding: EdgeInsets.only(bottom: 20),
+        width: MediaQuery.of(context).size.width,
+        child: Center(
+          child: Column(
+            children: [
+              //gambar
+              SizedBox(
+                height: 100,
+                child: gambar,
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    // Title
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: judul,
+                    ),
+
+                    subtitle,
+                    waktu,
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+      // });
+    }
+
+    Widget iconTick(int status) {
+      return (status == 0)
+          ? Icon(
+              Icons.payment,
+              color: cokelat,
+            )
+          : (status == 1)
+              ? Icon(
+                  Icons.store,
+                  color: cokelat,
+                )
+              : (status == 2)
+                  ? Icon(
+                      Icons.delivery_dining_outlined,
+                      color: cokelat,
+                    )
+                  : Icon(
+                      Icons.home_outlined,
+                      color: cokelat,
+                    );
+    }
+
+    Widget tick(bool isChecked, int status) {
+      return isChecked
+          ? Column(
+              children: [
+                SizedBox(
+                  height: 50,
+                  child: iconTick(status),
+                ),
+                Icon(
+                  Icons.check_circle,
+                  color: cokelat,
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                SizedBox(
+                  height: 50,
+                  child: iconTick(status),
+                ),
+                Icon(
+                  Icons.radio_button_unchecked,
+                  color: cokelat,
+                ),
+              ],
+            );
+    }
+
+    Widget line(bool isChecked) {
+      return isChecked
+          ? Column(children: [
+              SizedBox(
+                height: 50,
+              ),
+              Container(
+                color: Colors.amber,
+                height: 2.0,
+                width: MediaQuery.of(context).size.width * 0.2,
+              ),
+            ])
+          : Column(children: [
+              SizedBox(
+                height: 50,
+              ),
+              Container(
+                color: Colors.grey.shade300,
+                height: 1.0,
+                width: MediaQuery.of(context).size.width * 0.2,
+              ),
+            ]);
+    }
+
+    Widget gambarTimeline(int status) {
+      return Container(
+        padding: EdgeInsets.only(top: 10, bottom: 30),
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var i = 0; i < 4; i++)
+              (i < status)
+                  ? Row(
+                      children: (i == 0)
+                          ? [tick(true, i)]
+                          : [line(true), tick(true, i)])
+                  : Row(
+                      children: (i == 0)
+                          ? [tick(false, i)]
+                          : [line(false), tick(false, i)])
+          ],
+        ),
+      );
+    }
+
+    Widget headerA(int indexnya) {
+      var judul;
+      var logo;
+      if (dataDelivery.isNotEmpty) {
+        if (indexnya == 1) {
+          judul = Text('PROSES DI OUTLET', style: TextStyle(fontSize: 18));
+          logo = Icon(Icons.store, size: 30, color: cokelat);
+        } else if (indexnya == 2) {
+          judul = Text('MENCARI DRIVER', style: TextStyle(fontSize: 18));
+          logo = Icon(Icons.search, size: 30, color: cokelat);
+        } else if (indexnya == 3) {
+          judul =
+              Text('MENUNGGU PICK-UP DRIVER', style: TextStyle(fontSize: 18));
+          logo = Icon(Icons.location_on_outlined, size: 30, color: cokelat);
+        } else if (indexnya == 4) {
+          judul = Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('DRIVER'),
+              SizedBox(height: 5),
+              Text(
+                  "${dataDelivery['driver']['name']} - ${dataDelivery['driver']['phone']}",
+                  style: TextStyle(fontSize: 18)),
+            ],
+          );
+          logo = Icon(Icons.phone, size: 30, color: cokelat);
+        } else {
+          judul = Text('TERKIRIM', style: TextStyle(fontSize: 18));
+          logo = Icon(Icons.check_circle_outline, size: 30, color: cokelat);
+        }
+      } else {
+        judul = Text('');
+        logo = Icon(Icons.shopping_cart_outlined, size: 30, color: cokelat);
+      }
+      return Container(
+        height: 80,
+        child: Card(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Row(
+              children: [
+                Expanded(
+                  child: judul,
+                ),
+                SizedBox(
+                  width: 25,
+                  child: logo,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Obx(() {
       return Container(
         decoration: const BoxDecoration(
@@ -75,7 +355,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
           padding: EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              // status order
+              // status order a
               Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -86,9 +366,11 @@ class DetailOrderView extends GetView<DetailOrderController> {
                   children: [
                     Expanded(
                       child: Text(
-                        "Ini Status Kirim",
+                        controller.statusOrder.value,
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.amber),
                       ),
                     ),
                     Container(
@@ -98,7 +380,39 @@ class DetailOrderView extends GetView<DetailOrderController> {
                           alignment: Alignment.centerRight,
                         ),
                         onPressed: () {
-                          Get.toNamed(Routes.STATUS_PENGIRIMAN);
+                          // Get.toNamed(Routes.STATUS_PENGIRIMAN);
+                          showModalBottomSheet(
+                            constraints: BoxConstraints(
+                              minHeight: 150.0,
+                              maxHeight: 400,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            context: context,
+                            builder: ((context) {
+                              return Flexible(
+                                fit: FlexFit.loose,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Status Order",
+                                      style: hBtebal,
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.all(5),
+                                      height: 1,
+                                      width: lebarLayar,
+                                      // color: Colors.grey[200],
+                                    ),
+                                    gambarTimeline(indexnya.value),
+                                    data3(indexnya.value),
+                                  ],
+                                ),
+                              );
+                            }),
+                          );
                         },
                         child: Text("Lihat Detail"),
                       ),

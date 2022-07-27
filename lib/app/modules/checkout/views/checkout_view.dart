@@ -1,3 +1,5 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -9,16 +11,22 @@ var adrDef = {}.obs;
 var cartA = [].obs;
 var lebarLayar;
 
+var allOutlet = [].obs;
+var outletTerdekat = [].obs;
+var allArea = [].obs;
+
 final cokelat = Colors.brown.shade700;
 final kuning = Colors.amber;
+final putih = Colors.white;
 final hBtipis = TextStyle(fontSize: 18);
 final hBtebal = TextStyle(fontSize: 18, fontWeight: FontWeight.w500);
 
 class CheckoutView extends GetView<CheckoutController> {
   CheckoutView({Key? key}) : super(key: key);
 
-  Widget delAddres(BuildContext context) {
+  Widget alamatDel(BuildContext context) {
     return Container(
+      // height: 100,
       padding: EdgeInsets.all(10),
       width: MediaQuery.of(context).size.width,
       child: Row(
@@ -43,6 +51,144 @@ class CheckoutView extends GetView<CheckoutController> {
             ),
           ),
           SizedBox(child: Icon(Icons.chevron_right_outlined)),
+        ],
+      ),
+    );
+  }
+
+  Widget pilihOutlet(BuildContext context) {
+    final tinggiLayar = MediaQuery.of(context).size.height;
+    lebarLayar = MediaQuery.of(context).size.width;
+    allOutlet = controller.allOutlet;
+    outletTerdekat = controller.outletTerdekat;
+    allArea = controller.allArea;
+
+    return Container(
+      height: 100,
+      width: lebarLayar,
+      child: TextButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Center(child: Text('Pilih Outlet', style: hBtebal)),
+              content: Container(
+                width: lebarLayar,
+                height: tinggiLayar * 0.6,
+                child: ListView.builder(
+                  itemCount: allOutlet.length,
+                  itemBuilder: ((context, index) {
+                    return ListTile(
+                      title: Text(allOutlet[index]['nama']),
+                      subtitle: Text(
+                        " ${allOutlet[index]['address']} - ${allOutlet[index]['city']}",
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                      onTap: () {
+                        controller.outletTerpilih.value = allOutlet[index];
+                        print(controller.outletTerpilih);
+                        Navigator.pop(context, true);
+                      },
+                    );
+                  }),
+                ),
+              ),
+            ),
+          );
+        },
+        child: Container(
+          child: Row(
+            children: [
+              Container(
+                width: lebarLayar * 0.2,
+                child: Icon(
+                  Icons.store,
+                  color: kuning,
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: controller.outletTerpilih.isEmpty
+                      ? Text(
+                          'PILIH OUTLET',
+                          style: TextStyle(color: cokelat, fontSize: 18),
+                        )
+                      : Text(
+                          controller.outletTerpilih['nama'],
+                          style: TextStyle(color: cokelat, fontSize: 18),
+                        ),
+                ),
+              ),
+              Container(
+                width: lebarLayar * 0.2,
+                child: Icon(
+                  Icons.arrow_right,
+                  color: cokelat,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget delAddres(BuildContext context) {
+    final tinggiLayar = MediaQuery.of(context).size.height;
+    return Obx(
+      () => Column(
+        children: [
+          // delivery / pickup
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade200,
+                  width: 1,
+                ),
+              ),
+            ),
+            height: tinggiLayar * 0.07,
+            child: Row(
+              children: [
+                Container(
+                  color: controller.isDelivery.isTrue ? kuning : putih,
+                  height: tinggiLayar * 0.07,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  width: lebarLayar * 0.5,
+                  child: TextButton(
+                    onPressed: () {
+                      controller.isDelivery.value = true;
+                    },
+                    child: Text(
+                      'DELIVERY',
+                      style: TextStyle(color: cokelat),
+                    ),
+                  ),
+                ),
+                Container(
+                  color: controller.isDelivery.isFalse ? kuning : putih,
+                  height: tinggiLayar * 0.07,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  width: lebarLayar * 0.5,
+                  child: TextButton(
+                    onPressed: () {
+                      controller.isDelivery.value = false;
+                    },
+                    child: Text(
+                      'PICK-UP',
+                      style: TextStyle(color: cokelat),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          //deladr
+          controller.isDelivery.isTrue
+              ? alamatDel(context)
+              : pilihOutlet(context),
         ],
       ),
     );
@@ -215,6 +361,84 @@ class CheckoutView extends GetView<CheckoutController> {
     );
   }
 
+  Widget MetodeBayar(BuildContext context) {
+    final tinggiLayar = MediaQuery.of(context).size.height;
+    lebarLayar = MediaQuery.of(context).size.width;
+    allOutlet = controller.allOutlet;
+    outletTerdekat = controller.outletTerdekat;
+    allArea = controller.allArea;
+
+    return Container(
+      // height: 100,
+      width: lebarLayar,
+      child: TextButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Center(child: Text('Pilih Outlet', style: hBtebal)),
+              content: Container(
+                width: lebarLayar,
+                height: tinggiLayar * 0.6,
+                child: ListView.builder(
+                  itemCount: allOutlet.length,
+                  itemBuilder: ((context, index) {
+                    return ListTile(
+                      title: Text(allOutlet[index]['nama']),
+                      subtitle: Text(
+                        " ${allOutlet[index]['address']} - ${allOutlet[index]['city']}",
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                      onTap: () {
+                        controller.outletTerpilih.value = allOutlet[index];
+                        print(controller.outletTerpilih);
+                        Navigator.pop(context, true);
+                      },
+                    );
+                  }),
+                ),
+              ),
+            ),
+          );
+        },
+        child: Container(
+          child: Row(
+            children: [
+              // Container(
+              //   width: lebarLayar * 0.2,
+              //   child: Icon(
+              //     Icons.store,
+              //     color: kuning,
+              //   ),
+              // ),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: controller.metodeBayar.isEmpty
+                      ? Text(
+                          'PILIH METODE PEMBAYARAN',
+                          style: TextStyle(color: cokelat),
+                        )
+                      : Text(
+                          controller.metodeBayar['nama'],
+                          style: TextStyle(color: cokelat),
+                        ),
+                ),
+              ),
+              Container(
+                width: lebarLayar * 0.2,
+                child: Icon(
+                  Icons.arrow_right,
+                  color: cokelat,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget rincianPembayaran(BuildContext context) {
     return Container(
       child: Card(
@@ -295,58 +519,22 @@ class CheckoutView extends GetView<CheckoutController> {
         style: TextStyle(color: kuning),
       ),
     );
+
     final tinggiLayar = tinggiFull -
         appbar.preferredSize.height -
         MediaQuery.of(context).padding.top;
+
     return Scaffold(
       appBar: appbar,
       body: Column(children: [
         Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey.shade200,
-                width: 1,
-              ),
-            ),
-          ),
-          height: tinggiLayar * 0.07,
-          child: Row(
-            children: [
-              Container(
-                color: cokelat,
-                height: tinggiLayar * 0.07,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                width: lebarLayar * 0.5,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'DELIVERY',
-                    style: TextStyle(color: kuning),
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                width: lebarLayar * 0.5,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'PICK-UP',
-                    style: TextStyle(color: cokelat),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: tinggiLayar * 0.86,
+          height: tinggiLayar * 0.93,
           child: ListView(
             children: [
               delAddres(context),
               itemCart(context),
               promoNpoin(context),
+              MetodeBayar(context),
               rincianPembayaran(context),
             ],
           ),

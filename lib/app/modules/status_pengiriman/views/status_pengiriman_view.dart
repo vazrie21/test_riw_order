@@ -397,7 +397,7 @@ class StatusPengirimanView extends GetView<StatusPengirimanController> {
 
     var indexnya = 0.obs;
     // indexnya = controller.indexStatus;
-    indexnya.value = 4;
+    indexnya.value = 3;
     return MaterialApp(
       home: Scaffold(
         appBar: myAppBar,
