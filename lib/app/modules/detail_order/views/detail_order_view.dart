@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:test_riw_order/app/modules/checkout/views/checkout_view.dart';
 import 'package:test_riw_order/app/routes/app_pages.dart';
 import '../controllers/detail_order_controller.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final cokelat = Colors.brown.shade700;
 
@@ -20,6 +21,12 @@ class DetailOrderView extends GetView<DetailOrderController> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          fontFamily: 'PTSans',
+          textTheme: TextTheme(
+            bodyText1: TextStyle(color: Colors.grey[800]),
+            bodyText2: TextStyle(color: Colors.grey[800]),
+          )),
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -40,13 +47,6 @@ class DetailOrderView extends GetView<DetailOrderController> {
                       kepala(context),
                       badan(context),
                       kaki(context),
-                      // Container(
-                      //   child: Column(
-                      //     children: [
-
-                      //     ],
-                      //   ),
-                      // )
                     ],
                   )
                 : Center(
@@ -60,17 +60,16 @@ class DetailOrderView extends GetView<DetailOrderController> {
 
   Widget kepala(BuildContext context) {
     var orderD = controller.orderD;
+    var orderS = controller.orderS;
     final tinggiLayar = MediaQuery.of(context).size.height;
     final lebar = MediaQuery.of(context).size.width;
     final tinggi = tinggiLayar;
     final cokelat = Colors.brown.shade700;
 
-    var dataDelivery = {}.obs;
-    dataDelivery = controller.dataReq;
+    var indexnya = controller.statusTrx;
+    // indexnya.value = 4;
 
-    var indexnya = 0.obs;
-    // indexnya = controller.indexStatus;
-    indexnya.value = 4;
+    var visibelDetDeli = false.obs;
 
     Widget data3(int indexnya) {
       var gambar;
@@ -78,77 +77,35 @@ class DetailOrderView extends GetView<DetailOrderController> {
       var subtitle;
       var waktu;
       if (indexnya == 0) {
-        gambar = Icon(Icons.payment);
+        gambar = Icon(FontAwesomeIcons.moneyCheck);
         judul = Text("ORDER DIBATALKAN");
         subtitle = SizedBox(height: 0);
         waktu = SizedBox(height: 0);
       } else if (indexnya == 1) {
-        gambar = Icon(Icons.payment);
+        gambar = Icon(FontAwesomeIcons.moneyCheck);
         judul = Text("MENUNGGU PEMBAYARAN");
         subtitle = SizedBox(height: 0);
         waktu = SizedBox(height: 0);
       } else if (indexnya == 2) {
         gambar = Icon(Icons.store);
         judul = Text("PESANAN SUDAH DITERIMA");
-        subtitle = Text("Akan diperoses di Outlet Terpilih");
+        subtitle = Text(
+            "Akan diperoses di Outlet Dapur Cokelat ${orderS['pickup_store']}");
         waktu = SizedBox(height: 0);
       } else if (indexnya == 3) {
         gambar = Icon(Icons.delivery_dining_outlined);
         judul = Text("MENUNGGU PROSES PICK-UP");
-        subtitle = Container(
-          padding: EdgeInsets.symmetric(vertical: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              dataDelivery.isNotEmpty
-                  ? Text(
-                      "Driver : ${dataDelivery['driver']['name'].toString()} ")
-                  : Text(''),
-              Icon(Icons.delivery_dining_outlined, size: 15, color: cokelat),
-            ],
-          ),
-        );
-        waktu = Container(
-          padding: EdgeInsets.symmetric(vertical: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              dataDelivery.isNotEmpty
-                  ? Text(
-                      "Perkiraan waktu pick-up : ${dataDelivery['timeline']['pickup']} ")
-                  : Text(''),
-              Icon(Icons.access_time_rounded, size: 15, color: cokelat),
-            ],
-          ),
-        );
+        subtitle = (orderS['ship_method'] != "Delivery")
+            ? Text(
+                "Di Outlet Dapur Cokelat ${orderS['pickup_store']} - ${controller.tglKirim.value}")
+            : Text(
+                "Akan dikirim dari Outlet Dapur Cokelat ${orderS['pickup_store']}");
+        waktu = SizedBox(height: 0);
       } else {
         gambar = Image.asset('assets/img/ceklis.png');
         judul = Text("PESANANMU SUDAH SAMPAI");
-        subtitle = Container(
-          padding: EdgeInsets.symmetric(vertical: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              dataDelivery.isNotEmpty
-                  ? Text(
-                      "Diterima oleh : ${dataDelivery['recipient']['firstName'].toString()} ")
-                  : Text(''),
-              // Icon(Icons.phone_iphone, size: 15, color: cokelat),
-            ],
-          ),
-        );
-        waktu = Container(
-          padding: EdgeInsets.symmetric(vertical: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              dataDelivery.isNotEmpty
-                  ? Text("Pada : ${dataDelivery['timeline']['completed']} ")
-                  : Text(''),
-              Icon(Icons.access_time_rounded, size: 15, color: cokelat),
-            ],
-          ),
-        );
+        subtitle = Text("");
+        waktu = SizedBox(height: 0);
       }
 
       // return Obx(() {
@@ -160,7 +117,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
             children: [
               //gambar
               SizedBox(
-                height: 100,
+                height: 50,
                 child: gambar,
               ),
               Container(
@@ -187,22 +144,26 @@ class DetailOrderView extends GetView<DetailOrderController> {
     Widget iconTick(int status) {
       return (status == 0)
           ? Icon(
-              Icons.payment,
+              FontAwesomeIcons.moneyCheck,
               color: cokelat,
+              size: 20,
             )
           : (status == 1)
               ? Icon(
-                  Icons.store,
+                  FontAwesomeIcons.shop,
                   color: cokelat,
+                  size: 20,
                 )
               : (status == 2)
                   ? Icon(
-                      Icons.delivery_dining_outlined,
+                      FontAwesomeIcons.truckArrowRight,
                       color: cokelat,
+                      size: 20,
                     )
                   : Icon(
-                      Icons.home_outlined,
+                      FontAwesomeIcons.boxOpen,
                       color: cokelat,
+                      size: 20,
                     );
     }
 
@@ -211,7 +172,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
           ? Column(
               children: [
                 SizedBox(
-                  height: 50,
+                  height: 30,
                   child: iconTick(status),
                 ),
                 Icon(
@@ -223,7 +184,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
           : Column(
               children: [
                 SizedBox(
-                  height: 50,
+                  height: 30,
                   child: iconTick(status),
                 ),
                 Icon(
@@ -238,7 +199,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
       return isChecked
           ? Column(children: [
               SizedBox(
-                height: 50,
+                height: 30,
               ),
               Container(
                 color: Colors.amber,
@@ -248,7 +209,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
             ])
           : Column(children: [
               SizedBox(
-                height: 50,
+                height: 30,
               ),
               Container(
                 color: Colors.grey.shade300,
@@ -260,7 +221,8 @@ class DetailOrderView extends GetView<DetailOrderController> {
 
     Widget gambarTimeline(int status) {
       return Container(
-        padding: EdgeInsets.only(top: 10, bottom: 30),
+        // color: kuning,
+        padding: EdgeInsets.only(top: 10, bottom: 10),
         width: MediaQuery.of(context).size.width,
         alignment: Alignment.center,
         child: Row(
@@ -281,57 +243,108 @@ class DetailOrderView extends GetView<DetailOrderController> {
       );
     }
 
-    Widget headerA(int indexnya) {
-      var judul;
-      var logo;
-      if (dataDelivery.isNotEmpty) {
-        if (indexnya == 1) {
-          judul = Text('PROSES DI OUTLET', style: TextStyle(fontSize: 18));
-          logo = Icon(Icons.store, size: 30, color: cokelat);
-        } else if (indexnya == 2) {
-          judul = Text('MENCARI DRIVER', style: TextStyle(fontSize: 18));
-          logo = Icon(Icons.search, size: 30, color: cokelat);
-        } else if (indexnya == 3) {
-          judul =
-              Text('MENUNGGU PICK-UP DRIVER', style: TextStyle(fontSize: 18));
-          logo = Icon(Icons.location_on_outlined, size: 30, color: cokelat);
-        } else if (indexnya == 4) {
-          judul = Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('DRIVER'),
-              SizedBox(height: 5),
-              Text(
-                  "${dataDelivery['driver']['name']} - ${dataDelivery['driver']['phone']}",
-                  style: TextStyle(fontSize: 18)),
-            ],
-          );
-          logo = Icon(Icons.phone, size: 30, color: cokelat);
-        } else {
-          judul = Text('TERKIRIM', style: TextStyle(fontSize: 18));
-          logo = Icon(Icons.check_circle_outline, size: 30, color: cokelat);
-        }
-      } else {
-        judul = Text('');
-        logo = Icon(Icons.shopping_cart_outlined, size: 30, color: cokelat);
-      }
-      return Container(
-        height: 80,
-        child: Card(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 40),
-            child: Row(
+    Future timelineDelivery(int indexnya) {
+      return showModalBottomSheet(
+        constraints: BoxConstraints(
+          minHeight: 100.0,
+          maxHeight: 400,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+        context: context,
+        builder: ((context) {
+          return Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: judul,
+                Text(
+                  "Status Order",
+                  style: hBtebal,
                 ),
-                SizedBox(
-                  width: 25,
-                  child: logo,
+                Container(
+                  margin: EdgeInsets.all(5),
+                  height: 1,
+                  width: lebarLayar,
+                  // color: Colors.grey[200],
                 ),
+                gambarTimeline(indexnya),
+                data3(indexnya),
               ],
             ),
+          );
+        }),
+      );
+    }
+
+    Widget statusTrx(int indexnya) {
+      return Obx(
+        () => Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(width: 1.0, color: Colors.grey.shade200),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      controller.statusOrder.value,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.amber),
+                    ),
+                  ),
+                  Container(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 0),
+                        alignment: Alignment.centerRight,
+                      ),
+                      onPressed: () {
+                        // Get.toNamed(Routes.STATUS_PENGIRIMAN);
+                        // timelineDelivery(indexnya);
+                        visibelDetDeli.value = !visibelDetDeli.value;
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            "Lihat Detail",
+                            style: TextStyle(color: cokelat),
+                          ),
+                          Container(
+                            child: (visibelDetDeli.isFalse)
+                                ? Icon(Icons.keyboard_arrow_right,
+                                    color: cokelat)
+                                : Icon(Icons.keyboard_arrow_down_sharp,
+                                    color: cokelat),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Visibility(
+                visible: visibelDetDeli.value,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: 1,
+                      width: lebarLayar,
+                      // color: Colors.grey[200],
+                    ),
+                    gambarTimeline(indexnya),
+                    data3(indexnya),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -356,70 +369,8 @@ class DetailOrderView extends GetView<DetailOrderController> {
           child: Column(
             children: [
               // status order a
-              Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(width: 1.0, color: Colors.grey.shade200),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        controller.statusOrder.value,
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.amber),
-                      ),
-                    ),
-                    Container(
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 0),
-                          alignment: Alignment.centerRight,
-                        ),
-                        onPressed: () {
-                          // Get.toNamed(Routes.STATUS_PENGIRIMAN);
-                          showModalBottomSheet(
-                            constraints: BoxConstraints(
-                              minHeight: 150.0,
-                              maxHeight: 400,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            context: context,
-                            builder: ((context) {
-                              return Flexible(
-                                fit: FlexFit.loose,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Status Order",
-                                      style: hBtebal,
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.all(5),
-                                      height: 1,
-                                      width: lebarLayar,
-                                      // color: Colors.grey[200],
-                                    ),
-                                    gambarTimeline(indexnya.value),
-                                    data3(indexnya.value),
-                                  ],
-                                ),
-                              );
-                            }),
-                          );
-                        },
-                        child: Text("Lihat Detail"),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              statusTrx(indexnya.value),
+
               //tgl order
               Container(
                 margin: EdgeInsets.only(bottom: 10),
@@ -430,19 +381,16 @@ class DetailOrderView extends GetView<DetailOrderController> {
                       child: Row(
                         children: [
                           Expanded(
-                            // color: Colors.red,
                             child: Text(
-                              controller.orderId,
+                              "INV-${controller.orderId}",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                           ),
                           Container(
-                            // color: Colors.blue,
                             child: Column(
                               children: [
                                 Container(
-                                  // color: Colors.red,
                                   child: TextButton(
                                     style: TextButton.styleFrom(
                                         padding:
@@ -451,9 +399,8 @@ class DetailOrderView extends GetView<DetailOrderController> {
                                     onPressed: () {
                                       Get.toNamed(Routes.INVOICE,
                                           arguments: "${controller.orderId}");
-                                      print("in itesting 1");
                                     },
-                                    child: Text("Invoice"),
+                                    child: Text("Lihat Invoice"),
                                   ),
                                 ),
                                 // Container(child: Text(controller.orderId)),
@@ -497,7 +444,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
     final lebarLayar = MediaQuery.of(context).size.width;
     return Obx(() {
       return Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
@@ -508,11 +455,24 @@ class DetailOrderView extends GetView<DetailOrderController> {
           ],
         ),
         width: lebarLayar,
-        margin: const EdgeInsets.symmetric(vertical: 2),
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        margin: EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Container(
+              height: 25,
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              alignment: Alignment.topLeft,
+              child: Text(
+                'Detail Belanja',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: cokelat,
+                ),
+              ),
+            ),
             for (var i = 0; i < orderI.length; i++)
               Container(
                 margin: EdgeInsets.symmetric(vertical: 5),
@@ -521,9 +481,9 @@ class DetailOrderView extends GetView<DetailOrderController> {
                   color: Colors.white,
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 2,
-                      blurRadius: 2,
+                      color: Colors.black26,
+                      spreadRadius: 0.5,
+                      blurRadius: 0.5,
                     )
                   ],
                 ),
@@ -660,7 +620,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
                       Expanded(
                         child: Text(
                           orderShip['ship_method'] ?? "",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          // style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       )
                     ],
@@ -679,32 +639,36 @@ class DetailOrderView extends GetView<DetailOrderController> {
                       Expanded(
                         child: Text(
                           controller.tglKirim.value,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          // style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       )
                     ],
                   ),
                 ),
                 //no resi
-                Container(
-                  // color: Colors.pink,
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 150,
-                        child: Text('No. Resi'),
-                      ),
-                      Expanded(
-                        child: Text(
-                          "123456789",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    ],
-                  ),
+                // Container(
+                //   // color: Colors.pink,
+                //   margin: EdgeInsets.symmetric(vertical: 5),
+                //   child: Row(
+                //     children: [
+                //       Container(
+                //         width: 150,
+                //         child: Text('No. Resi'),
+                //       ),
+                //       Expanded(
+                //         child: Text(
+                //           "123456789",
+                //           style: TextStyle(fontWeight: FontWeight.bold),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
+                SizedBox(
+                  height: 10,
                 ),
                 //alamat
+
                 Container(
                   // color: Colors.amber,
                   margin: EdgeInsets.symmetric(vertical: 5),
@@ -716,39 +680,54 @@ class DetailOrderView extends GetView<DetailOrderController> {
                         // color: Colors.red,
                         width: 150,
                         alignment: Alignment.topLeft,
-                        child: Text('Alamat'),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              orderShip['ship_fname'].toString(),
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              orderShip['ship_phone'].toString(),
-                              style: TextStyle(
-                                  // fontSize: 12,
-                                  ),
-                            ),
-                            Text(
-                              orderShip['ship_address'].toString(),
-                              style: TextStyle(
-                                  // fontSize: 12,
-                                  ),
-                            ),
-                            Text(
-                              orderShip['ship_address2'].toString(),
-                              style: TextStyle(
-                                  // fontSize: 12,
-                                  ),
-                            ),
+                            Text('Alamat '),
+                            Icon(
+                              FontAwesomeIcons.addressCard,
+                              size: 12,
+                            )
                           ],
+                        ),
+                      ),
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                orderShip['ship_fname'].toString(),
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                orderShip['ship_phone'].toString(),
+                                style: TextStyle(
+                                    // fontSize: 12,
+                                    ),
+                              ),
+                              (orderShip['ship_address'].toString().isEmpty)
+                                  ? SizedBox(height: 0)
+                                  : Text(
+                                      orderShip['ship_address'].toString(),
+                                      style: TextStyle(
+                                          // fontSize: 12,
+                                          ),
+                                    ),
+                              (orderShip['ship_address2'].toString().isEmpty)
+                                  ? SizedBox(height: 0)
+                                  : Text(
+                                      orderShip['ship_address2'].toString(),
+                                      style: TextStyle(
+                                          // fontSize: 12,
+                                          ),
+                                    ),
+                            ],
+                          ),
                         ),
                       )
                     ],
@@ -896,7 +875,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
                   ),
                   // grand total
                   Container(
-                    height: 25,
+                    height: 40,
                     child: Row(
                       children: [
                         Expanded(
@@ -916,9 +895,6 @@ class DetailOrderView extends GetView<DetailOrderController> {
                         )
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 25,
                   ),
                 ],
               ),

@@ -63,7 +63,7 @@ class RiwayatOrderController extends GetxController {
   ].obs;
   var orderList = [].obs;
   var url = Uri.parse(
-      'https://dapurcokelat.com/api/order/orderlist?token=xx&custid=48');
+      'https://dapurcokelat.com/api/order/orderlist?token=xx&custid=2043');
 
   Future<void> dataOrder() async {
     http.Response response = await http.get(url);
